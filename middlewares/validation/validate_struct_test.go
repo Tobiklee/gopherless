@@ -1,24 +1,28 @@
 package validation
 
 import (
-	"reflect"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
+type TestObject struct {
+	FieldOne string `validate:"required,min=3,max=32"`
+	FieldTwo string `validate:"required,min=3,max=32"`
+}
+
 func TestValidateStruct(t *testing.T) {
-	type args struct {
-		input interface{}
+	testPerson := TestObject{FieldOne: "Field", FieldTwo: "Mu"}
+
+	errors := ValidateStruct(testPerson)
+
+	expected := ErrorResponse{
+		FailedField: "TestObject.FieldTwo",
+		Tag:         "min",
+		Value:       "3",
 	}
-	var tests []struct {
-		name string
-		args args
-		want []*ErrorResponse
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := ValidateStruct(tt.args.input); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ValidateStruct() = %v, want %v", got, tt.want)
-			}
-		})
+
+	if assert.NotNil(t, errors) {
+		assert.Equal(t, 1, len(errors), "length should be 1")
+		assert.Equal(t, expected, *errors[0], "error response should match")
 	}
 }
