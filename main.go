@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	redis "github.com/Tobiklee/gopherless/middlewares/connectors"
-	"github.com/Tobiklee/gopherless/middlewares/validation"
 
 	"github.com/spf13/viper"
 )
@@ -22,12 +21,6 @@ func main() {
 		panic(fmt.Errorf("Fatal error config file: %w \n", err))
 	}
 
-	abc := validation.ErrorResponse{}
-	fmt.Println(abc)
-	fmt.Println(viper.Get(redis.REDIS_HOST_CONFIG))
-	fmt.Println(viper.Get(redis.REDIS_PORT_CONFIG))
-	viper.Get(redis.REDIS_HOST_CONFIG)
-
 	client := redis.ConnectToRedis(redis.RedisConfig{
 		Host: viper.GetString(redis.REDIS_HOST_CONFIG),
 		Port: viper.GetString(redis.REDIS_PORT_CONFIG),
@@ -40,13 +33,11 @@ func main() {
 	}
 
 	var d interface{} = &datum{}
-	if _, err = client.Get("name", &d); err != nil {
+	if err = client.Get("name", &d); err != nil {
 		panic(err)
 	}
 
-	fmt.Println("after getting from redis:", d)
-
 	var dod *datum = d.(*datum)
-	fmt.Println("deconstruction:", dod.Host, "", dod.Port)
+	fmt.Println("Deconstruction:", dod.Host, "", dod.Port)
 
 }
