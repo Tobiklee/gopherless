@@ -1,9 +1,11 @@
 package connectors
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 const (
@@ -32,28 +34,42 @@ func ConnectToRedis(config RedisConfig) RedisClient {
 		DB:       config.DB,
 	})
 
-	pong, err := client.Ping().Result()
-	fmt.Println(pong, err)
+	_, err := client.Ping(context.Background()).Result()
+	if err != nil {
+		panic(err)
+	}
 
-	return RedisClient{Config: config}
+	return RedisClient{Client: client, Config: config}
 }
 
 func (client *RedisClient) Ping() {
-	pong, err := client.Client.Ping().Result()
-	fmt.Println(pong, err)
-}
-
-func (client *RedisClient) Set() {
-	err := client.Client.Set("name", "James", 0).Err()
+	_, err := client.Client.Ping(context.Background()).Result()
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 }
 
-func (client *RedisClient) Get(id string) {
-	val, err := client.Client.Get(id).Result()
+func (client *RedisClient) Set(key string, value interface{}) error {
+	p, err := json.Marshal(value)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
-	fmt.Println(val)
+	fmt.Println("Redis Set ", p)
+	err = client.Client.Set(context.Background(), key, p, 0).Err()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (client *RedisClient) Get(key string, dest *interface{}) (interface{}, error) {
+	g := client.Client.Get(context.Background(), key)
+	if g.Err() != nil {
+		return nil, g.Err()
+	}
+	fmt.Println(" Get ", g.Val())
+	json.Unmarshal([]byte(g.Val()), dest)
+
+	return g.Val(), nil
+	//return json.Unmarshal(p, dest)
 }
