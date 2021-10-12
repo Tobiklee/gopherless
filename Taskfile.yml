@@ -1,0 +1,10 @@
+version: '3'
+
+tasks:
+  install:
+    cmds:
+      - go mod tidy
+
+  lint:
+    cmds:
+      - golangci-lint run ./... --fix
