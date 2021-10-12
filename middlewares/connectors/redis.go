@@ -65,7 +65,10 @@ func (client *RedisClient) Get(key string, dest *interface{}) error {
 	if g.Err() != nil {
 		return g.Err()
 	}
-	json.Unmarshal([]byte(g.Val()), dest)
+	err := json.Unmarshal([]byte(g.Val()), dest)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
