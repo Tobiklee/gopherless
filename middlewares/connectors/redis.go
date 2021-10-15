@@ -69,3 +69,28 @@ func (client *RedisClient) Get(key string, dest *interface{}) error {
 
 	return nil
 }
+
+func (client *RedisClient) HSet(base string, key string, value interface{}) error {
+	p, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	err = client.Client.HSet(context.Background(), base, key, p).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (client *RedisClient) HGet(base string, key string, dest *interface{}) error {
+	g := client.Client.HGet(context.Background(), base, key)
+	if g.Err() != nil {
+		return g.Err()
+	}
+
+	json.Unmarshal([]byte(g.Val()), dest)
+
+	return nil
+}

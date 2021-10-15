@@ -40,4 +40,16 @@ func main() {
 	var dod *datum = d.(*datum)
 	fmt.Println("Deconstruction:", dod.Host, "", dod.Port)
 
+	if err := client.HSet("gopherless", "name", datum{Host: "remote-sess", Port: 25}); err != nil {
+		panic(err)
+	}
+
+	var d0 interface{} = &datum{}
+	if err = client.HGet("gopherless", "name", &d0); err != nil {
+		panic(err)
+	}
+
+	var dod0 *datum = d0.(*datum)
+	fmt.Println("Deconstruction HGet:", dod0.Host, "", dod0.Port)
+
 }
