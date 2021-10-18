@@ -18,12 +18,12 @@ func main() {
 	viper.AddConfigPath("./config/") // optionally look for config in the working directory
 	err := viper.ReadInConfig()      // Find and read the config file
 	if err != nil {                  // Handle errors reading the config file
-		panic(fmt.Errorf("Fatal error config file: %w \n", err))
+		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
 
 	client := redis.ConnectToRedis(redis.RedisConfig{
-		Host: viper.GetString(redis.REDIS_HOST_CONFIG),
-		Port: viper.GetString(redis.REDIS_PORT_CONFIG),
+		Host: viper.GetString(redis.RedisHostConfig),
+		Port: viper.GetString(redis.RedisPortConfig),
 	})
 
 	fmt.Println("after connecting to redis", client.Client)
@@ -37,7 +37,6 @@ func main() {
 		panic(err)
 	}
 
-	var dod *datum = d.(*datum)
+	var dod = d.(*datum)
 	fmt.Println("Deconstruction:", dod.Host, "", dod.Port)
-
 }

@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	REDIS_HOST_CONFIG = "services.redis.host"
-	REDIS_PORT_CONFIG = "services.redis.port"
+	RedisHostConfig = "services.redis.host"
+	RedisPortConfig = "services.redis.port"
 )
 
 type (
@@ -60,7 +60,7 @@ func (client *RedisClient) Set(key string, value interface{}) error {
 	return nil
 }
 
-func (client *RedisClient) Get(key string, dest *interface{}) error {
+func (client *RedisClient) Get(key string, dest interface{}) error {
 	g := client.Client.Get(context.Background(), key)
 	if g.Err() != nil {
 		return g.Err()
