@@ -8,3 +8,7 @@ tasks:
   lint:
     cmds:
       - golangci-lint run ./... --fix
+
+  fmt:
+    cmds:
+      - go fmt .
