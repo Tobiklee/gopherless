@@ -1,17 +1,11 @@
 package dynamodb
 
 import (
-	"context"
 	"time"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 type EventStoreService struct {
-	Client *dynamodb.Client
-	Table  string
+	DynamoService *DynamoService
 }
 
 type EventModel struct {
@@ -46,16 +40,7 @@ func (store EventStoreService) Put(event PutParams) error {
 		Request:    event.Request,
 	}
 
-	marshalMap, err := attributevalue.MarshalMap(eventModel)
-
-	if err != nil {
-		return err
-	}
-
-	_, err = store.Client.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		TableName: aws.String(store.Table),
-		Item:      marshalMap,
-	})
+	err := store.DynamoService.Put(eventModel)
 
 	return err
 }
