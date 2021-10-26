@@ -57,13 +57,7 @@ func (store DynamoService) Put(object interface{}) error {
 }
 
 // SimpleUpdate updates an item with give values. It only uses SET expressions.
-func (store DynamoService) SimpleUpdate(key Key, item interface{}) error {
-	marshalKey, err := attributevalue.MarshalMap(key)
-
-	if err != nil {
-		return err
-	}
-
+func (store DynamoService) SimpleUpdate(item interface{}) error {
 	marshalMap, err := attributevalue.MarshalMap(item)
 
 	if err != nil {
@@ -74,7 +68,13 @@ func (store DynamoService) SimpleUpdate(key Key, item interface{}) error {
 
 	expressionValues := make(map[string]types.AttributeValue)
 
+	marshalKey := make(map[string]types.AttributeValue)
+
 	for k, v := range marshalMap {
+		if k == "PK" || k == "SK" {
+			marshalKey[k] = v
+			continue
+		}
 		expression := "set " + k + " = :" + k
 		updateExpressions = append(updateExpressions, expression)
 		expressionValues[":"+k] = v
