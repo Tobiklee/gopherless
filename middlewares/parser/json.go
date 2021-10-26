@@ -7,8 +7,8 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-// parse changes a json to a struct of type Request
-func parse(input string, request interface{}) *events.APIGatewayV2HTTPResponse {
+// Parse changes a json to a struct of type Request
+func Parse(input string, request interface{}) *events.APIGatewayV2HTTPResponse {
 	err := json.Unmarshal([]byte(input), &request)
 
 	if err != nil {
@@ -21,8 +21,8 @@ func parse(input string, request interface{}) *events.APIGatewayV2HTTPResponse {
 	return nil
 }
 
-// stringify changes from struct to json
-func stringify(input interface{}) (string, error) {
+// Stringify changes from struct to json
+func Stringify(input interface{}) (string, error) {
 	output, err := json.Marshal(input)
 	return string(output), err
 }
