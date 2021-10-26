@@ -11,8 +11,8 @@ tasks:
 
   fmt:
     cmds:
-      - go fmt .
+      - go fmt ./...
 
   test:
     cmds:
-      - go test
+      - go test ./...
