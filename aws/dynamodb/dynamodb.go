@@ -8,6 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+
+	"github.com/aws/aws-sdk-go-v2/config"
 )
 
 type Key struct {
@@ -18,6 +20,24 @@ type Key struct {
 type DynamoService struct {
 	Client *dynamodb.Client
 	Table  string
+}
+
+// New creates a new service instance
+func New(region, table string) *DynamoService {
+	cfg, err := config.LoadDefaultConfig(context.TODO(), func(opts *config.LoadOptions) error {
+		opts.Region = region
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	client := dynamodb.NewFromConfig(cfg)
+
+	return &DynamoService{
+		Client: client,
+		Table:  table,
+	}
 }
 
 // Put inserts incoming event into event store.
