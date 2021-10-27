@@ -17,13 +17,13 @@ type Key struct {
 	SK string
 }
 
-type DynamoService struct {
+type Service struct {
 	Client *dynamodb.Client
 	Table  string
 }
 
 // New creates a new service instance
-func New(region, table string) *DynamoService {
+func New(region, table string) *Service {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), func(opts *config.LoadOptions) error {
 		opts.Region = region
 		return nil
@@ -34,14 +34,14 @@ func New(region, table string) *DynamoService {
 
 	client := dynamodb.NewFromConfig(cfg)
 
-	return &DynamoService{
+	return &Service{
 		Client: client,
 		Table:  table,
 	}
 }
 
 // Put inserts incoming event into event store.
-func (store DynamoService) Put(object interface{}) error {
+func (store Service) Put(object interface{}) error {
 	marshalMap, err := attributevalue.MarshalMap(object)
 
 	if err != nil {
@@ -57,7 +57,7 @@ func (store DynamoService) Put(object interface{}) error {
 }
 
 // SimpleUpdate updates an item with give values. It only uses SET expressions.
-func (store DynamoService) SimpleUpdate(item interface{}) error {
+func (store Service) SimpleUpdate(item interface{}) error {
 	marshalMap, err := attributevalue.MarshalMap(item)
 
 	if err != nil {

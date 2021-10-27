@@ -3,11 +3,11 @@ module github.com/Tobiklee/gopherless
 go 1.17
 
 require (
-	github.com/aws/aws-lambda-go v1.27.0
 	github.com/aws/aws-sdk-go-v2 v1.10.0
 	github.com/aws/aws-sdk-go-v2/config v1.9.0
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.2.2
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.5.2
+	github.com/aws/aws-sdk-go-v2/service/sqs v1.10.0
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/spf13/viper v1.9.0
@@ -45,6 +45,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
+	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
 	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect

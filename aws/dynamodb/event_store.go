@@ -5,7 +5,7 @@ import (
 )
 
 type EventStoreService struct {
-	DynamoService *DynamoService
+	DynamoService *Service
 }
 
 type EventModel struct {
