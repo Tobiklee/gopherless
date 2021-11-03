@@ -17,6 +17,11 @@ type Key struct {
 	SK string
 }
 
+type IService interface {
+	Put(object interface{}) error
+	SimpleUpdate(item interface{}) error
+}
+
 type Service struct {
 	Client *dynamodb.Client
 	Table  string
