@@ -28,16 +28,21 @@ type Service struct {
 }
 
 // New creates a new service instance
-func New(region, table string) *Service {
-	cfg, err := config.LoadDefaultConfig(context.TODO(), func(opts *config.LoadOptions) error {
-		opts.Region = region
-		return nil
-	})
-	if err != nil {
-		panic(err)
+func New(region, table string, cfg *aws.Config) *Service {
+	var c aws.Config
+	if cfg == nil {
+		cfg, err := config.LoadDefaultConfig(context.TODO(), func(opts *config.LoadOptions) error {
+			opts.Region = region
+			return nil
+		})
+		c = cfg
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		c = *cfg
 	}
-
-	client := dynamodb.NewFromConfig(cfg)
+	client := dynamodb.NewFromConfig(c)
 
 	return &Service{
 		Client: client,
