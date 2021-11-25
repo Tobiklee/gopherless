@@ -20,6 +20,7 @@ type Key struct {
 type IService interface {
 	Put(object interface{}) error
 	SimpleUpdate(item interface{}) error
+	SimpleGet(primaryKey, sortKey string) (*dynamodb.GetItemOutput, error)
 }
 
 type Service struct {
@@ -101,12 +102,14 @@ func (store Service) SimpleUpdate(item interface{}) error {
 }
 
 // SimpleGet returns an unmarshalled item
-func (store Service) SimpleGet(primaryKey, sortKey string) (*interface{}, error) {
-
+func (store Service) SimpleGet(primaryKey, sortKey string) (*dynamodb.GetItemOutput, error) {
 	keyMap, err := attributevalue.MarshalMap(map[string]string{
 		"PK": primaryKey,
 		"SK": sortKey,
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	output, err := store.Client.GetItem(context.TODO(), &dynamodb.GetItemInput{
 		TableName: aws.String(store.Table),
@@ -116,11 +119,5 @@ func (store Service) SimpleGet(primaryKey, sortKey string) (*interface{}, error)
 		return nil, err
 	}
 
-	var item interface{}
-	err = attributevalue.UnmarshalMap(output.Item, item)
-	if err != nil {
-		return nil, err
-	}
-
-	return &item, nil
+	return output, nil
 }
