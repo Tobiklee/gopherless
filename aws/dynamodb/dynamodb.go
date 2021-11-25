@@ -99,3 +99,28 @@ func (store Service) SimpleUpdate(item interface{}) error {
 
 	return err
 }
+
+// SimpleGet returns an unmarshalled item
+func (store Service) SimpleGet(primaryKey, sortKey string) (*interface{}, error) {
+
+	keyMap, err := attributevalue.MarshalMap(map[string]string{
+		"PK": primaryKey,
+		"SK": sortKey,
+	})
+
+	output, err := store.Client.GetItem(context.TODO(), &dynamodb.GetItemInput{
+		TableName: aws.String(store.Table),
+		Key:       keyMap,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var item interface{}
+	err = attributevalue.UnmarshalMap(output.Item, item)
+	if err != nil {
+		return nil, err
+	}
+
+	return &item, nil
+}
