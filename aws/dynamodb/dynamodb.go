@@ -76,9 +76,8 @@ func (store Service) SimpleUpdate(item interface{}) error {
 	}
 
 	updateExpressions := []string{}
-
 	expressionValues := make(map[string]types.AttributeValue)
-
+	expressionAttributeNames := make(map[string]string)
 	marshalKey := make(map[string]types.AttributeValue)
 
 	for k, v := range marshalMap {
@@ -86,7 +85,8 @@ func (store Service) SimpleUpdate(item interface{}) error {
 			marshalKey[k] = v
 			continue
 		}
-		expression := "set " + k + " = :" + k
+		expressionAttributeNames["#"+k] = k // used to avoid running in errors with reserved dynamodb-keywords
+		expression := "#" + k + " = :" + k
 		updateExpressions = append(updateExpressions, expression)
 		expressionValues[":"+k] = v
 	}
@@ -94,8 +94,9 @@ func (store Service) SimpleUpdate(item interface{}) error {
 	_, err = store.Client.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
 		TableName:                 aws.String(store.Table),
 		Key:                       marshalKey,
-		UpdateExpression:          aws.String(strings.Join(updateExpressions, ",")),
+		UpdateExpression:          aws.String("set " + strings.Join(updateExpressions, ",")),
 		ExpressionAttributeValues: expressionValues,
+		ExpressionAttributeNames:  expressionAttributeNames,
 	})
 
 	return err
