@@ -9,3 +9,4 @@
 ## Commands
 - install `task install`
 - lint `task lint`
+- tests `task test`
