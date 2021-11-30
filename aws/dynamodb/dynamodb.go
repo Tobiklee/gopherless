@@ -21,6 +21,8 @@ type IService interface {
 	Put(object interface{}) error
 	SimpleUpdate(item interface{}) error
 	SimpleGet(primaryKey, sortKey string) (*dynamodb.GetItemOutput, error)
+	SimpleDelete(primaryKey, sortKey string) (*dynamodb.DeleteItemOutput, error)
+	GetByPK(pk string) (*dynamodb.QueryOutput, error)
 }
 
 type Service struct {
@@ -102,7 +104,6 @@ func (store Service) SimpleUpdate(item interface{}) error {
 	return err
 }
 
-// SimpleGet returns an unmarshalled item
 func (store Service) SimpleGet(primaryKey, sortKey string) (*dynamodb.GetItemOutput, error) {
 	keyMap, err := attributevalue.MarshalMap(map[string]string{
 		"PK": primaryKey,
@@ -121,4 +122,36 @@ func (store Service) SimpleGet(primaryKey, sortKey string) (*dynamodb.GetItemOut
 	}
 
 	return output, nil
+}
+
+func (store Service) SimpleDelete(primaryKey, sortKey string) (*dynamodb.DeleteItemOutput, error) {
+	keyMap, err := attributevalue.MarshalMap(map[string]string{
+		"PK": primaryKey,
+		"SK": sortKey,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	output, err := store.Client.DeleteItem(context.TODO(), &dynamodb.DeleteItemInput{
+		TableName: aws.String(store.Table),
+		Key:       keyMap,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return output, nil
+}
+
+func (store Service) GetByPK(pk string) (*dynamodb.QueryOutput, error) {
+	expressionValues := make(map[string]types.AttributeValue)
+	expressionValues[":PK"], _ = attributevalue.Marshal(pk)
+
+	output, err := store.Client.Query(context.TODO(), &dynamodb.QueryInput{
+		TableName:                 aws.String(store.Table),
+		KeyConditionExpression:    aws.String("PK = :PK"),
+		ExpressionAttributeValues: expressionValues,
+	})
+	return output, err
 }
