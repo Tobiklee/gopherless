@@ -87,6 +87,26 @@ func (store Service) SimpleUpdate(item interface{}) error {
 			marshalKey[k] = v
 			continue
 		}
+		if k == "CreatedAt" {
+			var pk, sk string
+			err := attributevalue.Unmarshal(marshalMap["PK"], &pk)
+			if err != nil {
+				return err
+			}
+			err = attributevalue.Unmarshal(marshalMap["SK"], &sk)
+			if err != nil {
+				return err
+			}
+			get, err := store.SimpleGet(pk, sk)
+			if err != nil {
+				return err
+			}
+			// skip adding CreatedAt value if an item with the given PK and SK already exists
+			if get != nil && get.Item != nil {
+				continue
+			}
+		}
+
 		expressionAttributeNames["#"+k] = k // used to avoid running in errors with reserved dynamodb-keywords
 		expression := "#" + k + " = :" + k
 		updateExpressions = append(updateExpressions, expression)
