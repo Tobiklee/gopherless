@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 )
 
+// Key describes the primary key and sort key combination for a dynamodb - table.
 type Key struct {
 	PK string
 	SK string
